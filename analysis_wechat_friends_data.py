@@ -96,6 +96,16 @@ def analysis_province(friends_list):
 
     return dict2list(provice_dict)
 
+def analysis_nickname(friends_list):
+    '''处理好友名称，生成词云'''
+    # 方法与analysis_province类似，从friends_list中获取名称:数量键值对，再有dict2list获取名称list,数量list
+    nickname_list = []
+    for item in friends_list:
+        nickname_list.append(item['NickName'])
+    nickname_dict = collections.Counter(nickname_list)
+
+    return dict2list(nickname_dict)
+
 def gender_pie(title_name,gender_name,gender_num):
     total_num = 0
     for i in gender_num:
@@ -112,7 +122,8 @@ def gender_pie(title_name,gender_name,gender_num):
 
 def province_map(map_title,province_name,province_num):
     map_subtitle = '仅统计位于中国省份的信息'
-    map = pyecharts.Map(title=map_title,subtitle=map_subtitle)
+    map = pyecharts.Map(title=map_title,subtitle=map_subtitle,width=1600,height=800)
+    # print(map.width)
     map.add('',province_name,province_num,maptype='china',is_visualmap=True)
     map_file_name = './' + map_title + '.html'
     try:
@@ -121,6 +132,17 @@ def province_map(map_title,province_name,province_num):
     except Exception as e:
         pass
 
+def nickname_wc(wc_title,nickname_name,nickname_num):
+    '''微信好友名生成词云'''
+    # 不对好友名称进行分词，直接生成词云
+    wc = pyecharts.WordCloud(title=wc_title,width=1200,height=800)
+    wc.add('',nickname_name,nickname_num,shape='circle')
+    wc_file_name = './' + wc_title + '.html'
+    try:
+        wc.render(path=wc_file_name)
+        print('%s已保存至%s'%(wc_title,wc_file_name))
+    except Exception as e:
+        pass
 
 def save_heads_img(friends_list):
     '''保存头像数据'''
@@ -132,21 +154,26 @@ def save_heads_img(friends_list):
     else:
         pass
     print('正在保存好友头像，保存路径为:%s 请稍等'%(os.getcwd()+images_dir))
+    num = 0
     for friend in friends_list:
         image = itchat.get_head_img(userName=friend['UserName'])
-        print(image)
+        # print(image)
         # 单纯保存为RemarkName.jpg的话，未备注的好友头像文件为 .jpg，有文件覆盖情况
         # 另若头像名中包含特殊字符，保存成文件时又会报错，暂时无解？
         # 另若好友备注名相同的话也会存在文件覆盖情况----文件保存时先判断文件是否存在，如果存在文件名为xxx02.jpg?暂时不实现
-        if friend['RemarkName'] == '':
-            image_name = friend['NickName']+'.jpg'
-        else:
-            image_name = friend['RemarkName']+'.jpg'
+        # 先按纯数字命名保存头像文件。。。
+        image_name = str(num)+'.jpg'
+        num += 1
+        # if friend['RemarkName'] == '':
+        #     image_name = friend['NickName']+'.jpg'
+        # else:
+        #     image_name = friend['RemarkName']+'.jpg'
         try:
             with open(images_dir+image_name,'wb') as f:
                 f.write(image)
         except Exception as e:
             pass
+    print('头像已保存')
 
 
 if __name__ == '__main__':
@@ -162,3 +189,7 @@ if __name__ == '__main__':
 
     province_name, province_num = analysis_province(friends_list)
     province_map('微信好友省份分布图',province_name, province_num)
+
+    # 微信好友名生成词云
+    nickname_name, nickname_num = analysis_nickname(friends_list)
+    nickname_wc('微信好友名词云',nickname_name, nickname_num)
