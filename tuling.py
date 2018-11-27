@@ -7,6 +7,12 @@ Created on 2018-08-08
 
 import requests
 import json
+import logging
+
+logging.basicConfig(level=logging.DEBUG,
+                    filename='./log.txt',
+                    filemode='a',
+                    format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s')
 
 # 直接调用接口与图灵机器人对话
 
@@ -50,6 +56,8 @@ def get_answer(info):
     else:
         '''很多code值的处理结果都可以用如下方法，暂时这样用着？'''
         answer = s['results'][0]['values']['text']
+        #其他reply_code先记录到日志后，以后更新
+        logging.debug(u'问题：%s\t----%s\n返回数据：%s'%(info,reply_code,s))
         return answer
 
 if __name__ == '__main__':
