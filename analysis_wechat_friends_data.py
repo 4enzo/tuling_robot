@@ -8,9 +8,15 @@ Created on 2018-08-07
 import json
 import os
 import collections
+import logging
 
 import itchat
 import pyecharts
+
+logging.basicConfig(level=logging.DEBUG,
+                    filename='./log.txt',
+                    filemode='a',
+                    format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s')
 
 def get_friends_list():
     '''获取好友主要信息'''
@@ -43,6 +49,7 @@ def load_friends_data():
         with open(data_file,'r') as f:
             return json.loads(f.read())
     except Exception as e:
+        logging.debug(u'Error:%s'%e)
         print('Error:%s'%e)
 
 def get_friends_num(friends_list):
@@ -118,6 +125,7 @@ def gender_pie(title_name,gender_name,gender_num):
         pie.render(path=pie_file_name)
         print('%s已保存至%s'%(title_name,pie_file_name))
     except Exception as e:
+        logging.debug(u'Error:%s' % e)
         pass
 
 def province_map(map_title,province_name,province_num):
@@ -130,6 +138,7 @@ def province_map(map_title,province_name,province_num):
         map.render(path=map_file_name)
         print('%s已保存至%s'%(map_title,map_file_name))
     except Exception as e:
+        logging.debug(u'Error:%s' % e)
         pass
 
 def nickname_wc(wc_title,nickname_name,nickname_num):
@@ -142,6 +151,7 @@ def nickname_wc(wc_title,nickname_name,nickname_num):
         wc.render(path=wc_file_name)
         print('%s已保存至%s'%(wc_title,wc_file_name))
     except Exception as e:
+        logging.debug(u'Error:%s' % e)
         pass
 
 def save_heads_img(friends_list):
